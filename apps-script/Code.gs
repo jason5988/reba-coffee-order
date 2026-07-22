@@ -155,46 +155,77 @@ function handleCreateOrder(data) {
 // 綠界付款結果回調（ReturnURL）：驗證簽章後更新 Sheet 付款狀態
 // ------------------------------------------------------------
 function handleEcpayCallback(params) {
-  const props = PropertiesService.getScriptProperties();
-  const hashKey = props.getProperty("ECPAY_HASH_KEY");
-  const hashIV = props.getProperty("ECPAY_HASH_IV");
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const hashKey = props.getProperty("ECPAY_HASH_KEY");
+    const hashIV = props.getProperty("ECPAY_HASH_IV");
 
-  Logger.log("ECPay callback params: " + JSON.stringify(params));
+    const received = params.CheckMacValue;
+    const toVerify = {};
+    Object.keys(params).forEach((k) => {
+      if (k !== "CheckMacValue") toVerify[k] = params[k];
+    });
+    const expected = generateCheckMacValue(toVerify, hashKey, hashIV);
+    const macMatch = expected === received;
 
-  const received = params.CheckMacValue;
-  const toVerify = {};
-  Object.keys(params).forEach((k) => {
-    if (k !== "CheckMacValue") toVerify[k] = params[k];
-  });
-  const expected = generateCheckMacValue(toVerify, hashKey, hashIV);
-
-  Logger.log("expected=" + expected + " received=" + received);
-
-  if (expected !== received) {
-    Logger.log("CheckMacValue mismatch for " + params.MerchantTradeNo);
-    return ContentService.createTextOutput("0|CheckMacValueError");
-  }
-
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheets()[0];
-  const tradeNo = params.MerchantTradeNo;
-  const rowIndex = findRowByTradeNo(sheet, tradeNo);
-
-  Logger.log("rowIndex=" + rowIndex + " RtnCode=" + params.RtnCode);
-
-  if (rowIndex > 0) {
-    const paid = params.RtnCode === "1";
-    sheet.getRange(rowIndex, COL.付款狀態).setValue(paid ? "已付款" : "付款失敗");
-
-    if (paid) {
-      const rowValues = sheet.getRange(rowIndex, 1, 1, HEADER_ROW.length).getValues()[0];
-      notifyNewPaidOrder(rowValues, tradeNo);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const tradeNo = params.MerchantTradeNo;
+    let rowIndex = -1;
+    if (macMatch) {
+      const sheet = ss.getSheets()[0];
+      rowIndex = findRowByTradeNo(sheet, tradeNo);
     }
-  } else {
-    Logger.log("找不到對應訂單: " + tradeNo);
-  }
 
-  return ContentService.createTextOutput("1|OK");
+    writeDebugLog(ss, {
+      params: JSON.stringify(params),
+      expected,
+      received,
+      macMatch,
+      rowIndex,
+    });
+
+    if (!macMatch) {
+      return ContentService.createTextOutput("0|CheckMacValueError");
+    }
+
+    if (rowIndex > 0) {
+      const sheet = ss.getSheets()[0];
+      const paid = params.RtnCode === "1";
+      sheet.getRange(rowIndex, COL.付款狀態).setValue(paid ? "已付款" : "付款失敗");
+
+      if (paid) {
+        const rowValues = sheet.getRange(rowIndex, 1, 1, HEADER_ROW.length).getValues()[0];
+        notifyNewPaidOrder(rowValues, tradeNo);
+      }
+    }
+
+    return ContentService.createTextOutput("1|OK");
+  } catch (err) {
+    try {
+      const ss = SpreadsheetApp.openById(SHEET_ID);
+      writeDebugLog(ss, { params: JSON.stringify(params), error: String(err) });
+    } catch (err2) {
+      Logger.log(err2);
+    }
+    return ContentService.createTextOutput("0|Error");
+  }
+}
+
+function writeDebugLog(ss, data) {
+  let sheet = ss.getSheetByName("Debug");
+  if (!sheet) {
+    sheet = ss.insertSheet("Debug");
+    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error"]);
+  }
+  sheet.appendRow([
+    new Date(),
+    data.params || "",
+    data.expected || "",
+    data.received || "",
+    data.macMatch === undefined ? "" : String(data.macMatch),
+    data.rowIndex === undefined ? "" : data.rowIndex,
+    data.error || "",
+  ]);
 }
 
 function findRowByTradeNo(sheet, tradeNo) {
