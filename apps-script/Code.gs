@@ -159,12 +159,16 @@ function handleEcpayCallback(params) {
   const hashKey = props.getProperty("ECPAY_HASH_KEY");
   const hashIV = props.getProperty("ECPAY_HASH_IV");
 
+  Logger.log("ECPay callback params: " + JSON.stringify(params));
+
   const received = params.CheckMacValue;
   const toVerify = {};
   Object.keys(params).forEach((k) => {
     if (k !== "CheckMacValue") toVerify[k] = params[k];
   });
   const expected = generateCheckMacValue(toVerify, hashKey, hashIV);
+
+  Logger.log("expected=" + expected + " received=" + received);
 
   if (expected !== received) {
     Logger.log("CheckMacValue mismatch for " + params.MerchantTradeNo);
@@ -175,6 +179,8 @@ function handleEcpayCallback(params) {
   const sheet = ss.getSheets()[0];
   const tradeNo = params.MerchantTradeNo;
   const rowIndex = findRowByTradeNo(sheet, tradeNo);
+
+  Logger.log("rowIndex=" + rowIndex + " RtnCode=" + params.RtnCode);
 
   if (rowIndex > 0) {
     const paid = params.RtnCode === "1";
