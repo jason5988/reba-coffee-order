@@ -189,6 +189,8 @@ function handleEcpayCallback(params) {
       hashKeyLen: hashKey ? hashKey.length : -1,
       hashIVLen: hashIV ? hashIV.length : -1,
       encodedString,
+      hashKeyFingerprint: hashKey ? toHex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, hashKey)) : "",
+      hashIVFingerprint: hashIV ? toHex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, hashIV)) : "",
     });
 
     if (!macMatch) {
@@ -222,7 +224,7 @@ function writeDebugLog(ss, data) {
   let sheet = ss.getSheetByName("Debug");
   if (!sheet) {
     sheet = ss.insertSheet("Debug");
-    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error", "hashKeyLen", "hashIVLen", "encodedString"]);
+    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error", "hashKeyLen", "hashIVLen", "encodedString", "hashKeyFingerprint", "hashIVFingerprint"]);
   }
   sheet.appendRow([
     new Date(),
@@ -235,6 +237,8 @@ function writeDebugLog(ss, data) {
     data.hashKeyLen === undefined ? "" : data.hashKeyLen,
     data.hashIVLen === undefined ? "" : data.hashIVLen,
     data.encodedString || "",
+    data.hashKeyFingerprint || "",
+    data.hashIVFingerprint || "",
   ]);
 }
 
