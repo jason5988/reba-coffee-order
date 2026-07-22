@@ -3,6 +3,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeREeFl4gEK7Xr
 
 const PRICE_PER_PACK = 30;
 const MIN_PACKS = 100;
+const EMAIL_DOMAIN = "@krtco.com.tw";
 
 const PRODUCTS = [
   { key: "2019光耀之心", name: "2019 光耀之心", color: "var(--flavor-1)" },
@@ -119,6 +120,11 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  if (!email.toLowerCase().endsWith(EMAIL_DOMAIN)) {
+    formErrorEl.textContent = `本優惠專案為高捷員工專屬優惠，請輸入公司 email（${EMAIL_DOMAIN}）。`;
+    return;
+  }
+
   if (APPS_SCRIPT_URL.includes("PUT_YOUR_DEPLOYMENT_ID_HERE")) {
     formErrorEl.textContent = "尚未設定後端網址（APPS_SCRIPT_URL），請先完成部署，詳見 README.md。";
     return;
@@ -159,7 +165,7 @@ form.addEventListener("submit", async (e) => {
   } catch (err) {
     formErrorEl.textContent = `發生錯誤：${err.message}`;
     submitBtn.disabled = false;
-    submitBtn.textContent = "前往綠界刷卡付款";
+    submitBtn.textContent = "前往綠界付款（信用卡 / Apple Pay）";
   }
 });
 

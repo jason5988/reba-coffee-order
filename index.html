@@ -10,7 +10,6 @@
   <header class="hero">
     <h1>雷巴咖啡 濾掛咖啡團購</h1>
     <p class="hero-sub">高雄捷運福利委員會員工優惠專案</p>
-    <img src="images/box.jpg" alt="RebA CoffeE 雷巴咖啡 濾掛咖啡包裝盒" class="hero-image" />
   </header>
 
   <main class="container">
@@ -59,8 +58,9 @@
           <input type="text" name="dept" required placeholder="例：業務部 / 分機123" />
         </label>
         <label>
-          Email <span class="req">*</span>
-          <input type="email" name="email" required autocomplete="email" />
+          公司 Email（@krtco.com.tw） <span class="req">*</span>
+          <input type="email" name="email" required autocomplete="email" placeholder="您的帳號@krtco.com.tw" />
+          <span class="field-hint">因本優惠專案為高捷員工專屬優惠，結帳時請輸入您的公司 email，我們將會與福委會核對帳號正確性再行出貨。</span>
         </label>
         <label>
           聯絡電話 <span class="req">*</span>
@@ -76,12 +76,25 @@
         </label>
       </section>
 
+      <section class="policy-card">
+        <h2>訂購須知</h2>
+        <ul>
+          <li><strong>付款方式：</strong>信用卡或 Apple Pay 結帳</li>
+          <li><strong>出貨方式：</strong>使用順豐快遞寄送，若需 7-11 超商收件，請於備註填寫 7-11 店名</li>
+          <li><strong>運費門檻：</strong>滿 100 包免運</li>
+          <li><strong>製作天數：</strong>需 3~7 日</li>
+          <li><strong>發票開立方式：</strong>電子發票，若需發票載具，請於備註填寫載具，例：/922B2AR</li>
+          <li><strong>缺貨或更換風味處理方式：</strong>若產品需要調整，我們會先聯絡您確認後再行出貨</li>
+          <li><strong>訂單成立及取消規則：</strong>付款完成訂單即成立，若需取消，請電聯：06-3127588</li>
+        </ul>
+      </section>
+
       <div id="form-error" class="form-error" role="alert"></div>
 
       <button type="submit" id="submit-btn" class="submit-btn" disabled>
-        前往綠界刷卡付款
+        前往綠界付款（信用卡 / Apple Pay）
       </button>
-      <p class="secure-note">付款將導向綠界科技（ECPay）安全刷卡頁面，本站不會接觸或儲存您的信用卡資訊。</p>
+      <p class="secure-note">付款將導向綠界科技（ECPay）安全付款頁面，本站不會接觸或儲存您的信用卡資訊。</p>
     </form>
   </main>
 

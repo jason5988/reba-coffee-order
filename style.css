@@ -207,6 +207,34 @@ h2 {
   color: var(--error);
 }
 
+.field-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #8a7a6d;
+  line-height: 1.5;
+}
+
+.policy-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.policy-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.8;
+}
+
+.policy-card li {
+  margin-bottom: 0.3rem;
+}
+
 .customer-info input,
 .customer-info textarea {
   width: 100%;
