@@ -188,6 +188,55 @@ h2 {
   color: var(--error);
 }
 
+.payment-method {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.radio-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.bank-info {
+  margin-top: 0.8rem;
+  padding: 0.9rem 1rem;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.bank-info p {
+  margin: 0.25rem 0;
+}
+
+.success-msg {
+  background: #eaf6ec;
+  border: 1px solid #2e7d32;
+  color: #1e5c25;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+}
+
 .customer-info {
   background: #fff;
   border: 1px solid var(--border);

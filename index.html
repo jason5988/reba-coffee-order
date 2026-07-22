@@ -47,6 +47,26 @@
         <p id="threshold-msg" class="threshold-msg"></p>
       </section>
 
+      <section class="payment-method">
+        <h2>付款方式</h2>
+        <label class="radio-row">
+          <input type="radio" name="paymentMethod" value="credit_card" checked />
+          信用卡 / Apple Pay（綠界線上刷卡，即時扣款）
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="paymentMethod" value="bank_transfer" />
+          銀行轉帳匯款
+        </label>
+
+        <div id="bank-info" class="bank-info" hidden>
+          <p>請將款項匯款至以下帳戶：</p>
+          <p>銀行名稱：華南銀行 南都分行（代碼 008）</p>
+          <p>銀行帳號：645100038771</p>
+          <p>戶名：雷巴咖啡國際有限公司</p>
+          <p class="field-hint">匯款完成後，請於下方填寫「轉帳匯款末五碼」方便我們核對，我們確認款項到帳後會將訂單標記為已付款並安排出貨。</p>
+        </div>
+      </section>
+
       <section class="customer-info">
         <h2>訂購人資料</h2>
         <label>
@@ -71,6 +91,10 @@
           <input type="text" name="address" required autocomplete="street-address" />
         </label>
         <label>
+          轉帳匯款末五碼
+          <input type="text" name="last5" maxlength="5" placeholder="若選擇銀行轉帳，請填寫（選填）" />
+        </label>
+        <label>
           備註
           <textarea name="note" rows="3" placeholder="有其他需求請填寫（選填）"></textarea>
         </label>
@@ -79,7 +103,7 @@
       <section class="policy-card">
         <h2>訂購須知</h2>
         <ul>
-          <li><strong>付款方式：</strong>信用卡或 Apple Pay 結帳</li>
+          <li><strong>付款方式：</strong>信用卡 / Apple Pay（綠界線上刷卡）或銀行轉帳匯款</li>
           <li><strong>出貨方式：</strong>使用順豐快遞寄送，若需 7-11 超商收件，請於備註填寫 7-11 店名</li>
           <li><strong>運費門檻：</strong>滿 100 包免運</li>
           <li><strong>製作天數：</strong>需 3~7 日</li>
@@ -90,11 +114,12 @@
       </section>
 
       <div id="form-error" class="form-error" role="alert"></div>
+      <div id="success-msg" class="success-msg" hidden></div>
 
       <button type="submit" id="submit-btn" class="submit-btn" disabled>
         前往綠界付款（信用卡 / Apple Pay）
       </button>
-      <p class="secure-note">付款將導向綠界科技（ECPay）安全付款頁面，本站不會接觸或儲存您的信用卡資訊。</p>
+      <p id="secure-note" class="secure-note">付款將導向綠界科技（ECPay）安全付款頁面，本站不會接觸或儲存您的信用卡資訊。</p>
     </form>
   </main>
 

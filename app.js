@@ -24,7 +24,33 @@ const sumTotalEl = document.getElementById("sum-total");
 const thresholdMsgEl = document.getElementById("threshold-msg");
 const submitBtn = document.getElementById("submit-btn");
 const formErrorEl = document.getElementById("form-error");
+const successMsgEl = document.getElementById("success-msg");
+const secureNoteEl = document.getElementById("secure-note");
+const bankInfoEl = document.getElementById("bank-info");
 const form = document.getElementById("order-form");
+
+const SUBMIT_LABELS = {
+  credit_card: "前往綠界付款（信用卡 / Apple Pay）",
+  bank_transfer: "送出訂單（我將自行完成匯款）",
+};
+
+function getSelectedPaymentMethod() {
+  const checked = form.querySelector('input[name="paymentMethod"]:checked');
+  return checked ? checked.value : "credit_card";
+}
+
+function updatePaymentMethodUI() {
+  const method = getSelectedPaymentMethod();
+  bankInfoEl.hidden = method !== "bank_transfer";
+  submitBtn.textContent = SUBMIT_LABELS[method];
+  secureNoteEl.hidden = method !== "credit_card";
+}
+
+document.addEventListener("change", (e) => {
+  if (e.target.matches('input[name="paymentMethod"]')) {
+    updatePaymentMethodUI();
+  }
+});
 
 function renderProducts() {
   productListEl.innerHTML = "";
@@ -100,6 +126,7 @@ document.addEventListener("input", (e) => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   formErrorEl.textContent = "";
+  successMsgEl.hidden = true;
 
   const { totalPacks, subtotal, shippingFee, finalTotal, qualifies } = updateSummary();
   if (!qualifies) {
@@ -107,12 +134,14 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  const paymentMethod = getSelectedPaymentMethod();
   const fd = new FormData(form);
   const name = fd.get("name").trim();
   const dept = fd.get("dept").trim();
   const email = fd.get("email").trim();
   const phone = fd.get("phone").trim();
   const address = fd.get("address").trim();
+  const last5 = fd.get("last5").trim();
   const note = fd.get("note").trim();
 
   if (!name || !dept || !email || !phone || !address) {
@@ -138,6 +167,8 @@ form.addEventListener("submit", async (e) => {
     phone,
     address,
     note,
+    paymentMethod,
+    last5,
     products: { ...quantities },
     totalPacks,
     subtotal,
@@ -161,11 +192,18 @@ form.addEventListener("submit", async (e) => {
       throw new Error(data.message || "建立訂單失敗，請稍後再試。");
     }
 
-    redirectToEcpay(data.actionUrl, data.fields);
+    if (paymentMethod === "bank_transfer") {
+      successMsgEl.textContent = "訂單已送出！請完成匯款，我們確認款項到帳後會安排出貨並寄送確認信。";
+      successMsgEl.hidden = false;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "已送出";
+    } else {
+      redirectToEcpay(data.actionUrl, data.fields);
+    }
   } catch (err) {
     formErrorEl.textContent = `發生錯誤：${err.message}`;
     submitBtn.disabled = false;
-    submitBtn.textContent = "前往綠界付款（信用卡 / Apple Pay）";
+    submitBtn.textContent = SUBMIT_LABELS[paymentMethod];
   }
 });
 
@@ -186,3 +224,4 @@ function redirectToEcpay(actionUrl, fields) {
 
 renderProducts();
 updateSummary();
+updatePaymentMethodUI();

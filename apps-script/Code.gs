@@ -29,12 +29,19 @@ const HEADER_ROW = [
   "2019光耀之心", "2017光榮時刻", "千古尋", "語生花", "禪武定",
   "總包數", "商品小計", "運費", "應付總額",
   "訂單編號", "付款狀態", "備註", "網域", "出貨狀態",
+  "付款方式", "轉帳末五碼",
 ];
 const COL = {
   時間: 1, 姓名: 2, 部門分機: 3, Email: 4, 電話: 5, 寄件地址: 6,
   品項起始: 7, // 7~11 為五種風味
   總包數: 12, 商品小計: 13, 運費: 14, 應付總額: 15,
   訂單編號: 16, 付款狀態: 17, 備註: 18, 網域: 19, 出貨狀態: 20,
+  付款方式: 21, 轉帳末五碼: 22,
+};
+
+const PAYMENT_METHOD_LABELS = {
+  credit_card: "信用卡 / Apple Pay",
+  bank_transfer: "銀行轉帳",
 };
 
 function doPost(e) {
@@ -120,6 +127,8 @@ function handleCreateOrder(data) {
   const shippingFee = 0;
   const finalTotal = subtotal + shippingFee;
   const tradeNo = generateTradeNo();
+  const paymentMethod = data.paymentMethod === "bank_transfer" ? "bank_transfer" : "credit_card";
+  const initialStatus = paymentMethod === "bank_transfer" ? "待核對匯款" : "待付款";
 
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheets()[0];
@@ -129,12 +138,20 @@ function handleCreateOrder(data) {
     new Date(), data.name, data.dept || "", data.email, data.phone, data.address,
   ];
   PRODUCT_KEYS.forEach((key) => row.push(parseInt(products[key], 10) || 0));
-  row.push(totalPacks, subtotal, shippingFee, finalTotal, tradeNo, "待付款", data.note || "", data.domain || "", "未出貨");
+  row.push(
+    totalPacks, subtotal, shippingFee, finalTotal, tradeNo, initialStatus,
+    data.note || "", data.domain || "", "未出貨",
+    PAYMENT_METHOD_LABELS[paymentMethod], data.last5 || ""
+  );
   sheet.appendRow(row);
 
   const lastRow = sheet.getLastRow();
   const rule = SpreadsheetApp.newDataValidation().requireValueInList(["未出貨", "出貨中", "已出貨"], true).build();
   sheet.getRange(lastRow, COL.出貨狀態).setDataValidation(rule);
+
+  if (paymentMethod === "bank_transfer") {
+    return jsonOutput({ result: "success", paymentMethod: "bank_transfer" });
+  }
 
   const props = PropertiesService.getScriptProperties();
   const merchantId = props.getProperty("ECPAY_MERCHANT_ID");
