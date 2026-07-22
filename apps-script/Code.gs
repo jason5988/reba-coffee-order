@@ -40,10 +40,13 @@ const COL = {
 function doPost(e) {
   try {
     // 綠界的付款結果回調是 application/x-www-form-urlencoded，
-    // Apps Script 會自動解析進 e.parameter；我們自己前端呼叫是 JSON（text/plain），
-    // 用這點區分兩種請求來源。
+    // 我們自己前端呼叫是 JSON（text/plain），用這點區分兩種請求來源。
+    // 注意：Apps Script 的 e.parameter 自動解析會把 RtnMsg 等欄位裡的中文字弄丟，
+    // 所以綠界回調一律改成自己從 e.postData.contents 解析，不用 e.parameter。
     if (e.parameter && e.parameter.CheckMacValue && e.parameter.MerchantTradeNo) {
-      return handleEcpayCallback(e.parameter, e.postData ? e.postData.contents : "");
+      const rawBody = e.postData ? e.postData.contents : "";
+      const parsedParams = parseFormBody(rawBody);
+      return handleEcpayCallback(parsedParams, rawBody);
     }
 
     const data = JSON.parse(e.postData.contents);
@@ -59,6 +62,26 @@ function doPost(e) {
 
 function doGet() {
   return ContentService.createTextOutput("OK");
+}
+
+// 自己解析 form-urlencoded 原始內容，避免 Apps Script 的 e.parameter 自動解析
+// 弄丟中文字（例如 RtnMsg 開頭的「付款失敗」）
+function parseFormBody(rawBody) {
+  const result = {};
+  (rawBody || "").split("&").forEach((pair) => {
+    if (!pair) return;
+    const idx = pair.indexOf("=");
+    const key = idx === -1 ? pair : pair.slice(0, idx);
+    let value = idx === -1 ? "" : pair.slice(idx + 1);
+    value = value.replace(/\+/g, " ");
+    try {
+      value = decodeURIComponent(value);
+    } catch (e) {
+      // 已經是解碼過的內容，或含有無效的 % 序列，維持原樣
+    }
+    result[key] = value;
+  });
+  return result;
 }
 
 // ------------------------------------------------------------
