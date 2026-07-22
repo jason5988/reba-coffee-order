@@ -322,6 +322,61 @@ function notifyNewPaidOrder(rowValues, tradeNo) {
   }
 }
 
+// 寄確認信給客戶本人（跟 notifyNewPaidOrder 不同，那個是寄給管理員自己）
+function notifyCustomerPaymentConfirmed(rowValues, tradeNo) {
+  try {
+    const email = rowValues[COL.Email - 1];
+    if (!email) return;
+
+    const name = rowValues[COL.姓名 - 1];
+    const totalPacks = rowValues[COL.總包數 - 1];
+    const finalTotal = rowValues[COL.應付總額 - 1];
+    const address = rowValues[COL.寄件地址 - 1];
+
+    const body =
+      `${name} 您好，\n\n` +
+      `我們已確認您的匯款到帳，訂單已成立！\n\n` +
+      `訂單編號：${tradeNo}\n` +
+      `訂購數量：${totalPacks} 包\n` +
+      `應付金額：NT$ ${finalTotal}\n` +
+      `寄送地址：${address}\n\n` +
+      `我們將於 3~7 個工作天內為您安排出貨，出貨後將以順豐快遞寄送。\n` +
+      `如有任何問題，歡迎電聯：06-3127588\n\n` +
+      `雷巴咖啡 敬上`;
+
+    MailApp.sendEmail(email, "雷巴咖啡高捷福委團購 - 付款確認通知", body);
+  } catch (err) {
+    Logger.log(err);
+  }
+}
+
+// Google Sheet 的「可安裝觸發條件」：手動把 Q 欄（付款狀態）改成「已付款」時觸發
+// 只處理銀行轉帳訂單（信用卡走綠界 ReturnURL 回調自動通知，這裡不用重複寄）
+// 需要在 Apps Script 編輯器手動新增觸發條件：函式選 onPaymentStatusEdit，事件類型「已編輯」
+function onPaymentStatusEdit(e) {
+  try {
+    const range = e.range;
+    const sheet = range.getSheet();
+    if (sheet.getName() === "Debug") return;
+    if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
+    if (range.getColumn() !== COL.付款狀態) return;
+
+    const row = range.getRow();
+    if (row < 2) return;
+    if (range.getValue() !== "已付款") return;
+
+    const paymentMethod = sheet.getRange(row, COL.付款方式).getValue();
+    if (paymentMethod !== PAYMENT_METHOD_LABELS.bank_transfer) return;
+
+    const tradeNo = sheet.getRange(row, COL.訂單編號).getValue();
+    const rowValues = sheet.getRange(row, 1, 1, HEADER_ROW.length).getValues()[0];
+    notifyNewPaidOrder(rowValues, tradeNo);
+    notifyCustomerPaymentConfirmed(rowValues, tradeNo);
+  } catch (err) {
+    Logger.log(err);
+  }
+}
+
 function ensureHeader(sheet) {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADER_ROW);
