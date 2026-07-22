@@ -1,0 +1,241 @@
+:root {
+  --coffee-dark: #3b2418;
+  --coffee: #6f4e37;
+  --coffee-light: #a9764c;
+  --cream: #faf3ea;
+  --accent: #c96f3f;
+  --error: #c0392b;
+  --border: #e4d8c8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background: var(--cream);
+  color: var(--coffee-dark);
+  line-height: 1.6;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--coffee-dark), var(--coffee));
+  color: #fff;
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+}
+
+.hero-sub {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.notice-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+}
+
+.notice-card p {
+  margin: 0.3rem 0;
+}
+
+h2 {
+  font-size: 1.1rem;
+  color: var(--coffee-dark);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+
+.product-info .product-name {
+  font-weight: 700;
+  display: block;
+}
+
+.product-info .product-price {
+  font-size: 0.85rem;
+  color: var(--coffee-light);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qty-control button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--coffee-light);
+  background: #fff;
+  color: var(--coffee);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.qty-control button:active {
+  background: var(--coffee-light);
+  color: #fff;
+}
+
+.qty-control input {
+  width: 48px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.2rem;
+  font-size: 1rem;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.summary-row.total {
+  border-top: 1px solid var(--border);
+  margin-top: 0.4rem;
+  padding-top: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.threshold-msg {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.threshold-msg.ok {
+  color: #2e7d32;
+}
+
+.threshold-msg.warn {
+  color: var(--error);
+}
+
+.customer-info {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.customer-info label {
+  display: block;
+  margin-bottom: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.req {
+  color: var(--error);
+}
+
+.customer-info input,
+.customer-info textarea {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.customer-info textarea {
+  resize: vertical;
+}
+
+.form-error {
+  color: var(--error);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  min-height: 1.2em;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.submit-btn:disabled {
+  background: #ccb9a6;
+  cursor: not-allowed;
+}
+
+.submit-btn:not(:disabled):active {
+  opacity: 0.85;
+}
+
+.secure-note {
+  text-align: center;
+  font-size: 0.78rem;
+  color: #8a7a6d;
+  margin-top: 0.6rem;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--coffee-light);
+  font-size: 0.85rem;
+}

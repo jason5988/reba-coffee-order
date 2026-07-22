@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>雷巴咖啡｜高捷福委濾掛咖啡團購</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>雷巴咖啡 濾掛咖啡團購</h1>
+    <p class="hero-sub">高雄捷運福利委員會員工優惠專案</p>
+  </header>
+
+  <main class="container">
+    <section class="notice-card">
+      <p><strong>優惠說明：</strong>原價每包 45 元，福委優惠價每包 <strong>30 元</strong>。</p>
+      <p><strong>此優惠僅限單筆訂單滿 100 包成立</strong>（未滿 100 包無法送出訂單），滿 100 包即享免運費。</p>
+      <p>五種風味任選、任意搭配，總數量滿 100 包即可。</p>
+    </section>
+
+    <form id="order-form" novalidate>
+      <section class="products">
+        <h2>選擇風味與數量</h2>
+        <div id="product-list" class="product-list"></div>
+      </section>
+
+      <section class="summary-card">
+        <div class="summary-row">
+          <span>總包數</span>
+          <span id="sum-packs">0</span>
+        </div>
+        <div class="summary-row">
+          <span>商品小計</span>
+          <span id="sum-subtotal">NT$ 0</span>
+        </div>
+        <div class="summary-row">
+          <span>運費</span>
+          <span id="sum-shipping">—</span>
+        </div>
+        <div class="summary-row total">
+          <span>應付總額</span>
+          <span id="sum-total">NT$ 0</span>
+        </div>
+        <p id="threshold-msg" class="threshold-msg"></p>
+      </section>
+
+      <section class="customer-info">
+        <h2>訂購人資料</h2>
+        <label>
+          姓名 <span class="req">*</span>
+          <input type="text" name="name" required autocomplete="name" />
+        </label>
+        <label>
+          部門 / 分機 <span class="req">*</span>
+          <input type="text" name="dept" required placeholder="例：業務部 / 分機123" />
+        </label>
+        <label>
+          Email <span class="req">*</span>
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+        <label>
+          聯絡電話 <span class="req">*</span>
+          <input type="tel" name="phone" required autocomplete="tel" />
+        </label>
+        <label>
+          寄件地址 <span class="req">*</span>
+          <input type="text" name="address" required autocomplete="street-address" />
+        </label>
+        <label>
+          備註
+          <textarea name="note" rows="3" placeholder="有其他需求請填寫（選填）"></textarea>
+        </label>
+      </section>
+
+      <div id="form-error" class="form-error" role="alert"></div>
+
+      <button type="submit" id="submit-btn" class="submit-btn" disabled>
+        前往綠界刷卡付款
+      </button>
+      <p class="secure-note">付款將導向綠界科技（ECPay）安全刷卡頁面，本站不會接觸或儲存您的信用卡資訊。</p>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <p>雷巴咖啡 × 高雄捷運福利委員會</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
