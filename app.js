@@ -5,11 +5,11 @@ const PRICE_PER_PACK = 30;
 const MIN_PACKS = 100;
 
 const PRODUCTS = [
-  { key: "2019光耀之心", name: "2019 光耀之心" },
-  { key: "2017光榮時刻", name: "2017 光榮時刻" },
-  { key: "千古尋", name: "千古尋" },
-  { key: "語生花", name: "語生花" },
-  { key: "禪武定", name: "禪武定" },
+  { key: "2019光耀之心", name: "2019 光耀之心", color: "var(--flavor-1)" },
+  { key: "2017光榮時刻", name: "2017 光榮時刻", color: "var(--flavor-2)" },
+  { key: "千古尋", name: "千古尋", color: "var(--flavor-3)" },
+  { key: "語生花", name: "語生花", color: "var(--flavor-4)" },
+  { key: "禪武定", name: "禪武定", color: "var(--flavor-5)" },
 ];
 
 const quantities = {};
@@ -30,6 +30,7 @@ function renderProducts() {
   PRODUCTS.forEach((p) => {
     const row = document.createElement("div");
     row.className = "product-row";
+    row.style.setProperty("--row-accent", p.color);
     row.innerHTML = `
       <div class="product-info">
         <span class="product-name">${p.name}</span>

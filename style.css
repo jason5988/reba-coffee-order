@@ -1,11 +1,17 @@
 :root {
-  --coffee-dark: #3b2418;
-  --coffee: #6f4e37;
-  --coffee-light: #a9764c;
-  --cream: #faf3ea;
-  --accent: #c96f3f;
+  --coffee-dark: #0b2f3d;
+  --coffee: #163f4f;
+  --coffee-light: #5b7c8c;
+  --cream: #f7f3ec;
+  --accent: #c6a050;
   --error: #c0392b;
-  --border: #e4d8c8;
+  --border: #e3ddd0;
+
+  --flavor-1: #d4b563;
+  --flavor-2: #d58481;
+  --flavor-3: #88a3b6;
+  --flavor-4: #e2c6d2;
+  --flavor-5: #b4a993;
 }
 
 * {
@@ -36,6 +42,25 @@ body {
   margin: 0;
   opacity: 0.85;
   font-size: 0.95rem;
+}
+
+.hero-image {
+  display: block;
+  max-width: 140px;
+  width: 100%;
+  height: auto;
+  margin: 1.2rem auto 0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.flavor-banner {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
 }
 
 .container {
@@ -79,6 +104,7 @@ h2 {
   justify-content: space-between;
   background: #fff;
   border: 1px solid var(--border);
+  border-left: 5px solid var(--row-accent, var(--coffee-light));
   border-radius: 8px;
   padding: 0.8rem 1rem;
 }
