@@ -165,6 +165,10 @@ function handleEcpayCallback(params) {
     Object.keys(params).forEach((k) => {
       if (k !== "CheckMacValue") toVerify[k] = params[k];
     });
+    const keys = Object.keys(toVerify).sort();
+    const pairs = keys.map((k) => `${k}=${toVerify[k]}`);
+    const rawString = `HashKey=${hashKey}&${pairs.join("&")}&HashIV=${hashIV}`;
+    const encodedString = dotNetUrlEncode(rawString);
     const expected = generateCheckMacValue(toVerify, hashKey, hashIV);
     const macMatch = expected === received;
 
@@ -182,6 +186,9 @@ function handleEcpayCallback(params) {
       received,
       macMatch,
       rowIndex,
+      hashKeyLen: hashKey ? hashKey.length : -1,
+      hashIVLen: hashIV ? hashIV.length : -1,
+      encodedString,
     });
 
     if (!macMatch) {
@@ -215,7 +222,7 @@ function writeDebugLog(ss, data) {
   let sheet = ss.getSheetByName("Debug");
   if (!sheet) {
     sheet = ss.insertSheet("Debug");
-    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error"]);
+    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error", "hashKeyLen", "hashIVLen", "encodedString"]);
   }
   sheet.appendRow([
     new Date(),
@@ -225,6 +232,9 @@ function writeDebugLog(ss, data) {
     data.macMatch === undefined ? "" : String(data.macMatch),
     data.rowIndex === undefined ? "" : data.rowIndex,
     data.error || "",
+    data.hashKeyLen === undefined ? "" : data.hashKeyLen,
+    data.hashIVLen === undefined ? "" : data.hashIVLen,
+    data.encodedString || "",
   ]);
 }
 
