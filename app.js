@@ -1,5 +1,5 @@
 // 部署好 Apps Script（見 apps-script/Code.gs 與 README.md）後，把下面網址換成你的 Web App /exec 網址
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/PUT_YOUR_DEPLOYMENT_ID_HERE/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybHCIm2DBlpB5u5d4nA0eahJxwkFyHjj4zkepwPD1pR7XbU4KWIh5mYOJlvjg6FVIg/exec";
 
 const PRICE_PER_PACK = 30;
 const MIN_PACKS = 100;
