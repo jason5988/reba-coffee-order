@@ -43,7 +43,7 @@ function doPost(e) {
     // Apps Script 會自動解析進 e.parameter；我們自己前端呼叫是 JSON（text/plain），
     // 用這點區分兩種請求來源。
     if (e.parameter && e.parameter.CheckMacValue && e.parameter.MerchantTradeNo) {
-      return handleEcpayCallback(e.parameter);
+      return handleEcpayCallback(e.parameter, e.postData ? e.postData.contents : "");
     }
 
     const data = JSON.parse(e.postData.contents);
@@ -154,7 +154,7 @@ function handleCreateOrder(data) {
 // ------------------------------------------------------------
 // 綠界付款結果回調（ReturnURL）：驗證簽章後更新 Sheet 付款狀態
 // ------------------------------------------------------------
-function handleEcpayCallback(params) {
+function handleEcpayCallback(params, rawBody) {
   try {
     const props = PropertiesService.getScriptProperties();
     const hashKey = props.getProperty("ECPAY_HASH_KEY");
@@ -191,6 +191,7 @@ function handleEcpayCallback(params) {
       encodedString,
       hashKeyFingerprint: hashKey ? toHex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, hashKey)) : "",
       hashIVFingerprint: hashIV ? toHex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, hashIV)) : "",
+      rawBody: rawBody || "",
     });
 
     if (!macMatch) {
@@ -224,7 +225,7 @@ function writeDebugLog(ss, data) {
   let sheet = ss.getSheetByName("Debug");
   if (!sheet) {
     sheet = ss.insertSheet("Debug");
-    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error", "hashKeyLen", "hashIVLen", "encodedString", "hashKeyFingerprint", "hashIVFingerprint"]);
+    sheet.appendRow(["時間", "params", "expected", "received", "macMatch", "rowIndex", "error", "hashKeyLen", "hashIVLen", "encodedString", "hashKeyFingerprint", "hashIVFingerprint", "rawBody"]);
   }
   sheet.appendRow([
     new Date(),
@@ -239,6 +240,7 @@ function writeDebugLog(ss, data) {
     data.encodedString || "",
     data.hashKeyFingerprint || "",
     data.hashIVFingerprint || "",
+    data.rawBody || "",
   ]);
 }
 
