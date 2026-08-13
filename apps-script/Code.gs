@@ -22,8 +22,8 @@ const LINE_TOKEN = ""; // 如需 LINE 通知，填 LINE Notify token
 const PRICE_PER_PACK = 30;
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 110;
-const GIFT_THRESHOLD = 2200;
-const GIFT_STEP = 200;
+const GIFT_THRESHOLD = 2400;
+const GIFT_STEP = 300;
 const EMAIL_DOMAIN = "@krtco.com.tw";
 const PRODUCT_KEYS = ["2019光耀之心", "2017光榮時刻", "千古尋", "語生花", "禪武定"];
 

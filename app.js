@@ -5,8 +5,8 @@ const PRICE_PER_PACK = 30;
 const EMAIL_DOMAIN = "@krtco.com.tw";
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 110;
-const GIFT_THRESHOLD = 2200;
-const GIFT_STEP = 200;
+const GIFT_THRESHOLD = 2400;
+const GIFT_STEP = 300;
 
 function computeGiftCount(subtotal) {
   if (subtotal < GIFT_THRESHOLD) return 0;
