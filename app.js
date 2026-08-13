@@ -2,8 +2,16 @@
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeREeFl4gEK7XrlVy4SFrTEe_uDs_LVzcwUwfJnXVzbO-jKOnxcZjBhUyHYmHVrSap/exec";
 
 const PRICE_PER_PACK = 30;
-const MIN_PACKS = 100;
 const EMAIL_DOMAIN = "@krtco.com.tw";
+const FREE_SHIPPING_THRESHOLD = 1500;
+const SHIPPING_FEE = 110;
+const GIFT_THRESHOLD = 2200;
+const GIFT_STEP = 200;
+
+function computeGiftCount(subtotal) {
+  if (subtotal < GIFT_THRESHOLD) return 0;
+  return Math.floor((subtotal - GIFT_THRESHOLD) / GIFT_STEP) + 1;
+}
 
 const PRODUCTS = [
   { key: "2019光耀之心", name: "2019 光耀之心", color: "var(--flavor-1)" },
@@ -21,7 +29,7 @@ const sumPacksEl = document.getElementById("sum-packs");
 const sumSubtotalEl = document.getElementById("sum-subtotal");
 const sumShippingEl = document.getElementById("sum-shipping");
 const sumTotalEl = document.getElementById("sum-total");
-const thresholdMsgEl = document.getElementById("threshold-msg");
+const giftMsgEl = document.getElementById("gift-msg");
 const submitBtn = document.getElementById("submit-btn");
 const formErrorEl = document.getElementById("form-error");
 const successMsgEl = document.getElementById("success-msg");
@@ -76,27 +84,31 @@ function renderProducts() {
 function updateSummary() {
   const totalPacks = Object.values(quantities).reduce((a, b) => a + b, 0);
   const subtotal = totalPacks * PRICE_PER_PACK;
-  const qualifies = totalPacks >= MIN_PACKS;
-  const shippingFee = 0;
+  const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingFee = subtotal > 0 ? (freeShipping ? 0 : SHIPPING_FEE) : 0;
   const finalTotal = subtotal + shippingFee;
+  const giftCount = computeGiftCount(subtotal);
 
   sumPacksEl.textContent = totalPacks;
   sumSubtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
-  sumShippingEl.textContent = qualifies ? "免運" : "—（未達出貨門檻）";
+  sumShippingEl.textContent = subtotal === 0 ? "—" : freeShipping ? "免運" : `NT$ ${SHIPPING_FEE}`;
   sumTotalEl.textContent = `NT$ ${finalTotal.toLocaleString()}`;
 
-  if (qualifies) {
-    thresholdMsgEl.textContent = `已達 100 包最低出貨門檻，可享優惠價與免運！`;
-    thresholdMsgEl.className = "threshold-msg ok";
-    submitBtn.disabled = false;
+  if (giftCount > 0) {
+    giftMsgEl.textContent = `🎁 加贈 ${giftCount} 包濾掛咖啡（隨機口味）！`;
+    giftMsgEl.className = "gift-msg ok";
+  } else if (subtotal > 0) {
+    const remaining = GIFT_THRESHOLD - subtotal;
+    giftMsgEl.textContent = `再購買 NT$ ${remaining.toLocaleString()} 即可獲得滿額贈禮`;
+    giftMsgEl.className = "gift-msg hint";
   } else {
-    const remaining = MIN_PACKS - totalPacks;
-    thresholdMsgEl.textContent = `此優惠僅限單筆訂單滿 100 包成立，還差 ${remaining} 包`;
-    thresholdMsgEl.className = "threshold-msg warn";
-    submitBtn.disabled = true;
+    giftMsgEl.textContent = "";
+    giftMsgEl.className = "gift-msg";
   }
 
-  return { totalPacks, subtotal, shippingFee, finalTotal, qualifies };
+  submitBtn.disabled = totalPacks <= 0;
+
+  return { totalPacks, subtotal, shippingFee, finalTotal, giftCount };
 }
 
 document.addEventListener("click", (e) => {
@@ -128,9 +140,9 @@ form.addEventListener("submit", async (e) => {
   formErrorEl.textContent = "";
   successMsgEl.hidden = true;
 
-  const { totalPacks, subtotal, shippingFee, finalTotal, qualifies } = updateSummary();
-  if (!qualifies) {
-    formErrorEl.textContent = "尚未達到 100 包最低出貨門檻，無法送出訂單。";
+  const { totalPacks, subtotal, shippingFee, finalTotal, giftCount } = updateSummary();
+  if (totalPacks <= 0) {
+    formErrorEl.textContent = "請至少選擇 1 包咖啡再送出訂單。";
     return;
   }
 
@@ -174,6 +186,7 @@ form.addEventListener("submit", async (e) => {
     subtotal,
     shippingFee,
     finalTotal,
+    giftCount,
     domain: location.hostname,
   };
 

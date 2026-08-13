@@ -20,7 +20,10 @@ const NOTIFY_EMAIL = "freshroastkan@gmail.com";
 const LINE_TOKEN = ""; // 如需 LINE 通知，填 LINE Notify token
 
 const PRICE_PER_PACK = 30;
-const MIN_PACKS = 100;
+const FREE_SHIPPING_THRESHOLD = 1500;
+const SHIPPING_FEE = 110;
+const GIFT_THRESHOLD = 2200;
+const GIFT_STEP = 200;
 const EMAIL_DOMAIN = "@krtco.com.tw";
 const PRODUCT_KEYS = ["2019光耀之心", "2017光榮時刻", "千古尋", "語生花", "禪武定"];
 
@@ -29,15 +32,20 @@ const HEADER_ROW = [
   "2019光耀之心", "2017光榮時刻", "千古尋", "語生花", "禪武定",
   "總包數", "商品小計", "運費", "應付總額",
   "訂單編號", "付款狀態", "備註", "網域", "出貨狀態",
-  "付款方式", "轉帳末五碼",
+  "付款方式", "轉帳末五碼", "贈品包數",
 ];
 const COL = {
   時間: 1, 姓名: 2, 部門分機: 3, Email: 4, 電話: 5, 寄件地址: 6,
   品項起始: 7, // 7~11 為五種風味
   總包數: 12, 商品小計: 13, 運費: 14, 應付總額: 15,
   訂單編號: 16, 付款狀態: 17, 備註: 18, 網域: 19, 出貨狀態: 20,
-  付款方式: 21, 轉帳末五碼: 22,
+  付款方式: 21, 轉帳末五碼: 22, 贈品包數: 23,
 };
+
+function computeGiftCount(subtotal) {
+  if (subtotal < GIFT_THRESHOLD) return 0;
+  return Math.floor((subtotal - GIFT_THRESHOLD) / GIFT_STEP) + 1;
+}
 
 const PAYMENT_METHOD_LABELS = {
   credit_card: "信用卡 / Apple Pay",
@@ -104,11 +112,8 @@ function handleCreateOrder(data) {
     totalPacks += qty;
   });
 
-  if (totalPacks < MIN_PACKS) {
-    return jsonOutput({
-      result: "error",
-      message: `未達 ${MIN_PACKS} 包最低出貨門檻（目前 ${totalPacks} 包）`,
-    });
+  if (totalPacks < 1) {
+    return jsonOutput({ result: "error", message: "請至少選擇 1 包咖啡" });
   }
 
   if (!data.name || !data.email || !data.phone || !data.address) {
@@ -124,8 +129,10 @@ function handleCreateOrder(data) {
   }
 
   const subtotal = totalPacks * PRICE_PER_PACK;
-  const shippingFee = 0;
+  const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const finalTotal = subtotal + shippingFee;
+  const giftCount = computeGiftCount(subtotal);
+  if (giftCount > 0) itemNames.push(`贈品-濾掛咖啡(隨機口味) x${giftCount}`);
   const tradeNo = generateTradeNo();
   const paymentMethod = data.paymentMethod === "bank_transfer" ? "bank_transfer" : "credit_card";
   const initialStatus = paymentMethod === "bank_transfer" ? "待核對匯款" : "待付款";
@@ -141,7 +148,7 @@ function handleCreateOrder(data) {
   row.push(
     totalPacks, subtotal, shippingFee, finalTotal, tradeNo, initialStatus,
     data.note || "", data.domain || "", "未出貨",
-    PAYMENT_METHOD_LABELS[paymentMethod], data.last5 || ""
+    PAYMENT_METHOD_LABELS[paymentMethod], data.last5 || "", giftCount
   );
   sheet.appendRow(row);
 

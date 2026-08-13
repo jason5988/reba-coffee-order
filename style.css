@@ -174,18 +174,20 @@ h2 {
   color: var(--accent);
 }
 
-.threshold-msg {
+.gift-msg {
   margin: 0.6rem 0 0;
   font-size: 0.88rem;
   font-weight: 700;
+  min-height: 1.2em;
 }
 
-.threshold-msg.ok {
+.gift-msg.ok {
   color: #2e7d32;
 }
 
-.threshold-msg.warn {
-  color: var(--error);
+.gift-msg.hint {
+  color: var(--coffee-light);
+  font-weight: 600;
 }
 
 .payment-method {
